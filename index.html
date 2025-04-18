@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz: Atmungssystem</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        h2 {
+            color: #00796b;
+        }
+        .frage {
+            margin-bottom: 20px;
+        }
+        .antworten button {
+            display: block;
+            width: 100%;
+            margin: 8px 0;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #000;
+            background-color: #b2dfdb;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .antworten button:hover {
+            background-color: #4db6ac;
+        }
+        .antworten button.correct {
+            background-color: #81c784;
+            color: #000;
+        }
+        .antworten button.wrong {
+            background-color: #e57373;
+            color: #000;
+        }
+        #navigation {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        #navigation button {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            border: none;
+            background-color: #00796b;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 id="frageText"></h2>
+        <div class="antworten" id="antwortButtons"></div>
+        <div id="navigation">
+            <button onclick="restartQuiz()">Wiederholen</button>
+            <button onclick="goBack()">Zurück</button>
+        </div>
+    </div>
+
+    <script>
+        const fragen = [('Wie viele Lungenflügel hat der Mensch?', ['1', '2', '3', '4'], 1), ('Was ist die Hauptaufgabe der Bronchien?', ['Gasaustausch', 'Transport der Atemluft zu den Alveolen', 'Produktion von Surfactant', 'Regulation der Herzfrequenz'], 1), ('Wie nennt man die Gesamtheit der Atemwege von Nase bis zu den Bronchien?', ['Lungenkreislauf', 'Respirationstrakt', 'Bronchialsystem', 'Pulmonalsystem'], 1), ('Was ist die Hauptfunktion der Trachea?', ['Filterung des Blutes', 'Regulation des Blutdrucks', 'Leitung der Luft in die Bronchien', 'Produktion von Schleim'], 2), ('Welche Art von Muskelgewebe steuert die Weite der Bronchien?', ['Quergestreifte Muskulatur', 'Glatte Muskulatur', 'Herzmuskulatur', 'Skelettmuskulatur'], 1), ('Welches Gas wird mit der Ausatmung hauptsächlich ausgeschieden?', ['Sauerstoff', 'Kohlendioxid', 'Stickstoff', 'Helium'], 1), ('Welches Volumen umfasst die gesamte Luft, die nach maximaler Ein- und Ausatmung in die Lunge passt?', ['Atemzugvolumen', 'Residualvolumen', 'Vitalkapazität', 'Funktionelle Residualkapazität'], 2), ('Wie nennt man die Lunge umgebende Flüssigkeit, die Reibung beim Atmen verhindert?', ['Synovialflüssigkeit', 'Lungenflüssigkeit', 'Pleuraerguss', 'Pleuraflüssigkeit'], 3), ('Welche Funktion hat der Hering-Breuer-Reflex?', ['Regulation der Herzfrequenz', 'Verhinderung einer Überdehnung der Lunge', 'Steigerung der Atemfrequenz', 'Kontrolle des Blutdrucks'], 1), ('Welcher Nerv spielt eine zentrale Rolle bei der Steuerung des Zwerchfells?', ['Vagusnerv', 'Phrenicusnerv', 'Trigeminusnerv', 'Hypoglossusnerv'], 1), ('Was passiert bei einer Sauerstoffsättigung im Blut unter 90 %?', ['Die Atmung wird langsamer', 'Das Gehirn erhält zu wenig Sauerstoff', 'Der CO₂-Gehalt im Blut steigt', 'Die Lunge produziert mehr Surfactant'], 1), ('Welche Art von Atemmechanismus tritt bei schwerer Azidose auf?', ['Kussmaul-Atmung', 'Cheyne-Stokes-Atmung', 'Biot-Atmung', 'Schnappatmung'], 0), ('Wie nennt man die maximale Luftmenge, die nach normaler Einatmung noch zusätzlich eingeatmet werden kann?', ['Residualvolumen', 'Inspiratorisches Reservevolumen', 'Exspiratorisches Reservevolumen', 'Atemzugvolumen'], 1), ('Was passiert bei einer obstruktiven Lungenerkrankung mit der Ausatmung?', ['Sie ist normal', 'Sie ist verlängert und erschwert', 'Sie erfolgt zu schnell', 'Sie stoppt plötzlich'], 1), ('Welcher Teil des Gehirns reguliert unbewusst die Atemfrequenz?', ['Kleinhirn', 'Medulla oblongata', 'Thalamus', 'Hypothalamus'], 1), ('Welche Atmung tritt bei Herzinsuffizienz typischerweise auf?', ['Cheyne-Stokes-Atmung', 'Kussmaul-Atmung', 'Biot-Atmung', 'Apnoe'], 0), ('Welcher Bestandteil des Blutes bindet Sauerstoff für den Transport?', ['Leukozyten', 'Hämoglobin', 'Albumin', 'Thrombozyten'], 1), ('Welche Lungenerkrankung ist durch überblähte Alveolen und reduzierte Elastizität gekennzeichnet?', ['Emphysem', 'Bronchitis', 'Lungenfibrose', 'Pneumonie'], 0), ('Welche Art von Rezeptoren erkennen einen niedrigen Sauerstoffgehalt im Blut?', ['Mechanorezeptoren', 'Chemorezeptoren', 'Photorezeptoren', 'Nozizeptoren'], 1), ('Welches Organ wird durch eine pulmonale Hypertonie besonders belastet?', ['Leber', 'Herz', 'Milz', 'Niere'], 1), ('Was bedeutet eine restriktive Lungenerkrankung?', ['Verengung der Atemwege', 'Eingeschränkte Dehnbarkeit der Lunge', 'Übermäßige Schleimproduktion', 'Unkontrollierte Muskelkontraktion'], 1), ('Welche Struktur ist bei einer Kehlkopfentzündung betroffen?', ['Larynx', 'Trachea', 'Pharynx', 'Bronchien'], 0), ('Welcher pH-Wert im Blut ist normal?', ['6,5–6,9', '7,35–7,45', '7,8–8,2', '8,5–9,0'], 1), ('Wie nennt man eine verringerte Sauerstoffkonzentration im Blut?', ['Hyperkapnie', 'Hypoxämie', 'Hypotonie', 'Hyperventilation'], 1), ('Was geschieht bei einer Lungenembolie?', ['Eine Verengung der Bronchien', 'Ein Blutgerinnsel blockiert eine Lungenarterie', 'Eine Infektion der Bronchien', 'Ein Kollaps der Lunge'], 1), ('Welches Hormon ist bei Stress erhöht und führt zu einer schnelleren Atmung?', ['Insulin', 'Adrenalin', 'Melatonin', 'Prolaktin'], 1), ('Was kann eine mögliche Ursache für eine metabolische Azidose sein?', ['Lungenentzündung', 'Nierenversagen', 'Hyperventilation', 'Bluthochdruck'], 1), ('Wie nennt man eine plötzliche und unkontrollierte Kontraktion des Zwerchfells?', ['Singultus (Schluckauf)', 'Bronchospasmus', 'Hyperkapnie', 'Zyanose'], 0), ('Welche Erkrankung ist durch eine Lungenfibrose gekennzeichnet?', ['Verlust der Lungenelastizität durch Bindegewebsvermehrung', 'Überproduktion von Schleim in den Bronchien', 'Akute Infektion der Lungenbläschen', 'Verminderte Produktion von Surfactant'], 0), ('Welche Lungenstruktur sorgt für den effizienten Austausch von Sauerstoff und Kohlendioxid?', ['Bronchien', 'Alveolen', 'Trachea', 'Pleura'], 1)];
+        let aktuelleFrage = 0;
+        let beantwortet = false;
+
+        function zeigeFrage() {
+            const frage = fragen[aktuelleFrage];
+            document.getElementById("frageText").textContent = frage[0];
+
+            const antwortContainer = document.getElementById("antwortButtons");
+            antwortContainer.innerHTML = "";
+
+            frage[1].forEach((antwort, index) => {
+                const button = document.createElement("button");
+                button.textContent = antwort;
+                button.onclick = () => überprüfeAntwort(index, frage[2], button);
+                antwortContainer.appendChild(button);
+            });
+        }
+
+        function überprüfeAntwort(index, korrekt, button) {
+            if (beantwortet) return;
+            beantwortet = true;
+
+            const buttons = document.querySelectorAll(".antworten button");
+            buttons.forEach((btn, idx) => {
+                if (idx === korrekt) {
+                    btn.classList.add("correct");
+                } else if (idx === index) {
+                    btn.classList.add("wrong");
+                }
+            });
+
+            setTimeout(() => {
+                aktuelleFrage++;
+                beantwortet = false;
+                if (aktuelleFrage < fragen.length) {
+                    zeigeFrage();
+                } else {
+                    document.getElementById("frageText").textContent = "Quiz abgeschlossen!";
+                    document.getElementById("antwortButtons").innerHTML = "";
+                }
+            }, 1200);
+        }
+
+        function restartQuiz() {
+            aktuelleFrage = 0;
+            beantwortet = false;
+            zeigeFrage();
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        zeigeFrage();
+    </script>
+</body>
+</html>
